@@ -1,0 +1,34 @@
+1
+SELECT TOP 1 SalesLT.SalesOrderHeader.TotalDue, SalesLT.SalesOrderHeader.SalesOrderID
+FROM   SalesLT.SalesOrderHeader
+ORDER By 1 DESC
+
+SELECT SalesLT.SalesOrderHeader.SalesOrderID, SalesLT.SalesOrderHeader.TotalDue
+FROM SalesLT.SalesOrderHeader
+WHERE SalesLT.SalesOrderHeader.TotalDue  = (SELECT MAX(SalesLT.SalesOrderHeader.TotalDue) FROM SalesLT.SalesOrderHeader)
+
+2
+SELECT SalesLT.Customer.CustomerID , SalesLT.Customer.FirstName, SalesLT.Customer.MiddleName, SalesLT.Customer.LastName, SUM(SalesLT.SalesOrderDetail.OrderQty)
+FROM (SalesLT.SalesOrderHeader  inner join SalesLT.SalesOrderDetail 
+on SalesLT.SalesOrderHeader.SalesOrderID = SalesLT.SalesOrderDetail.SalesOrderID) inner join SalesLT.Customer
+on SalesLT.SalesOrderHeader.CustomerID=SalesLT.Customer.CustomerID
+GROUP BY SalesLT.Customer.CustomerID , SalesLT.Customer.FirstName, SalesLT.Customer.MiddleName, SalesLT.Customer.LastName
+HAVING SUM(SalesLT.SalesOrderDetail.OrderQty)<20 
+
+SELECT  SalesLT.Customer.CustomerID , SalesLT.Customer.FirstName, SalesLT.Customer.MiddleName, SalesLT.Customer.LastName
+FROM SalesLT.Customer
+WHERE SalesLT.Customer.CustomerID in (SELECT CustomerID 
+FROM SalesLT.SalesOrderHeader inner join SalesLT.SalesOrderDetail on SalesLT.SalesOrderHeader.SalesOrderID = SalesLT.SalesOrderDetail.SalesOrderID
+GROUP BY CustomerID
+HAVING Sum(SalesLT.SalesOrderDetail.OrderQty)<20)
+
+3
+SELECT  SalesLt.Address.City, YEAR(SalesLT.SalesOrderHeader.DueDate) as Year, MONTH(SalesLT.SalesOrderHeader.DueDate) as Month,
+Sum(SalesLT.SalesOrderHeader.TotalDue) as Sum_Sales
+FROM SalesLT.SalesOrderHeader inner join SalesLt.Address ON SalesLT.SalesOrderHeader.BillToAddressID=SalesLt.Address.AddressID
+GROUP BY SalesLt.Address.City, SalesLT.SalesOrderHeader.TotalDue, SalesLT.SalesOrderHeader.DueDate
+
+4
+SELECT Top(5) SalesLT.SalesOrderHeader.ShipMethod, SalesLT.SalesOrderHeader.PurchaseOrderNumber, SalesLT.SalesOrderHeader.OrderDate, SalesLT.SalesOrderHeader.TotalDue
+FROM SalesLT.SalesOrderHeader 
+ORDER by TotalDue DESC
